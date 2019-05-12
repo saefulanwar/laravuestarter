@@ -82,17 +82,17 @@ scratch. This page gets rid of all links and provides the needed markup only.
                   <a href="#" class="nav-link">
                     <i class="nav-icon fas fa-blog orange"></i>
                     <p>
-                      Blog
+                      Content
                       <i class="right fa fa-angle-left"></i>
                     </p>
                   </a>
                   <ul class="nav nav-treeview">
                     <li class="nav-item">
-                      <router-link to="/users" class="nav-link">
+                      <router-link to="/posts" class="nav-link">
                         <i class="fas fa-edit nav-icon teal"></i>
                         <p>Posts</p>
                       </router-link>
-                      <router-link to="/roles" class="nav-link">
+                      <router-link to="/category" class="nav-link">
                         <i class="fas fa-sticky-note nav-icon teal"></i>
                         <p>Category</p>
                       </router-link>
@@ -132,6 +132,15 @@ scratch. This page gets rid of all links and provides the needed markup only.
           </li>
 
           <li class="nav-item">
+            <router-link to="/developer" class="nav-link">
+              <i class="nav-icon fas fa-cogs"></i>
+              <p>
+                Developer
+              </p>
+            </router-link>
+          </li>
+
+          <li class="nav-item">
 
             <a class="nav-link" href="{{ route('logout') }}"
                   onclick="event.preventDefault();
@@ -162,6 +171,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <div class="content">
       <div class="container-fluid">
           <router-view></router-view>
+          <!-- set progressbar -->
+          <vue-progress-bar></vue-progress-bar>
       </div><!-- /.container-fluid -->
     </div>
     <!-- /.content -->

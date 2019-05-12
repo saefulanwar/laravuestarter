@@ -1,9 +1,11 @@
 <template>
     <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-md-8">
+        <div class="row mt-5">
+            <div class="col-md-12">
                 <div class="card">
-                    <div class="card-header">Example Component</div>
+                    <div class="card-header">
+                        <h3 class="card-title">Example Component</h3>
+                    </div>
 
                     <div class="card-body">
                         I'm an example component.

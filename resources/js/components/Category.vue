@@ -4,7 +4,11 @@
             <div class="col-md-12">
                 <div class="card">
                     <div class="card-header">
-                        <h3 class="card-title">User Roles</h3>
+                        <h3 class="card-title">Post Categories</h3>
+                    </div>
+
+                    <div class="card-body">
+                        I'm an post category component.
                     </div>
                 </div>
             </div>
