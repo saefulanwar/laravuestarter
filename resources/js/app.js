@@ -9,8 +9,11 @@ require('./bootstrap')
 
 window.Vue = require('vue')
 
-import { Form, HasError, AlertError } from 'vform'
-import moment from 'moment'
+import { Form, HasError, AlertError } from 'vform';
+import moment from 'moment';
+
+import Gate from './Gate';
+Vue.prototype.$gate = new Gate(window.user);
 
 import VueProgressBar from 'vue-progressbar'
 Vue.use(VueProgressBar, {
@@ -19,6 +22,10 @@ Vue.use(VueProgressBar, {
   height: '10px',
   thickness: '3px',
 })
+
+import vSelect from 'vue-select'
+
+Vue.component('v-select', vSelect)
 
 import Swal from 'sweetalert2'
 window.swal = Swal;
@@ -45,8 +52,10 @@ let routes = [
     { path: '/category',  component: require('./components/Category.vue').default },
     { path: '/users',  component: require('./components/Users.vue').default },
     { path: '/roles',  component: require('./components/Role.vue').default },
-    { path: '/profile', component: require('./components/Profile.vue').default }
+    { path: '/profile', component: require('./components/Profile.vue').default },
+    { path: '*', component: require('./components/NotFound.vue').default }
   ]
+  
 
 const router = new VueRouter({
     mode: 'history',
@@ -92,6 +101,15 @@ Vue.component(
   require('./components/passport/PersonalAccessTokens.vue').default
 );
 
+Vue.component(
+  'not-found',
+  require('./components/NotFound.vue').default
+);
+
+Vue.component('pagination', require('laravel-vue-pagination'));
+
+
+
 /**
  * Next, we will create a fresh Vue application instance and attach it to
  * the page. Then, you may begin adding components to this application
@@ -100,5 +118,17 @@ Vue.component(
 
 const app = new Vue({
     el: '#app',
-    router
+    router,
+    data: {
+      search : ''
+    },
+    methods: {
+      searchit: _.debounce( () => {
+        Fire.$emit('searching');
+        }, 1000),
+
+      printme() {
+        window.print();
+      }
+    }
 });

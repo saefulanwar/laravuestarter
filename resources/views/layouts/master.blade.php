@@ -29,16 +29,14 @@ scratch. This page gets rid of all links and provides the needed markup only.
     </ul>
 
     <!-- SEARCH FORM -->
-    <form class="form-inline ml-3">
       <div class="input-group input-group-sm">
-        <input class="form-control form-control-navbar" type="search" placeholder="Search" aria-label="Search">
+        <input v-model="search" class="form-control form-control-navbar" @keyup="searchit" type="search" placeholder="Search" aria-label="Search">
         <div class="input-group-append">
-          <button class="btn btn-navbar" type="submit">
+          <button class="btn btn-navbar" @click="searchit">
             <i class="fa fa-search"></i>
           </button>
         </div>
       </div>
-    </form>
 
   </nav>
   <!-- /.navbar -->
@@ -98,8 +96,9 @@ scratch. This page gets rid of all links and provides the needed markup only.
                       </router-link>
                     </li>
                   </ul>
-                </li>
-          
+                </li>  
+            
+            @can('isAdmin')
             <li class="nav-item has-treeview">
             <a href="#" class="nav-link">
               <i class="nav-icon fa fa-cog orange"></i>
@@ -116,19 +115,10 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 </router-link>
                 <router-link to="/roles" class="nav-link">
                   <i class="fab fa-accusoft nav-icon teal"></i>
-                  <p>Roles</p>
+                  <p>Role / Type</p>
                 </router-link>
               </li>
             </ul>
-          </li>
-
-          <li class="nav-item">
-            <router-link to="/profile" class="nav-link">
-              <i class="nav-icon fa fa-user cyan"></i>
-              <p>
-                User Profile
-              </p>
-            </router-link>
           </li>
 
           <li class="nav-item">
@@ -136,6 +126,16 @@ scratch. This page gets rid of all links and provides the needed markup only.
               <i class="nav-icon fas fa-cogs"></i>
               <p>
                 Developer
+              </p>
+            </router-link>
+          </li>
+          @endcan
+
+          <li class="nav-item">
+            <router-link to="/profile" class="nav-link">
+              <i class="nav-icon fa fa-user cyan"></i>
+              <p>
+                User Profile
               </p>
             </router-link>
           </li>
@@ -192,6 +192,11 @@ scratch. This page gets rid of all links and provides the needed markup only.
 </div>
 <!-- ./wrapper -->
 
+@auth
+<script>
+      window.user = @json(auth()->user());
+</script>
+@endauth
 
 <script src="/js/app.js"></script>
 </body>

@@ -1,6 +1,6 @@
 <template>
     <div class="container">
-        <div class="row mt-5">
+        <div class="row mt-5" v-if="$gate.isAdminOrAuthor()">
             <div class="col-md-12">
                 <div class="card">
                     <div class="card-header">
@@ -22,7 +22,7 @@
                                     <th>Registered At</th>
                                     <th>Modify</th>
                                 </tr>
-                                <tr v-for="user in users" :key="user.id">
+                                <tr v-for="user in users.data" :key="user.id">
                                     <td>{{user.id}}</td>
                                     <td>{{user.name}}</td>
                                     <td>{{user.email}}</td>
@@ -41,8 +41,15 @@
                             </tbody>
                         </table>
                     </div>
+                    <div class="card-footer">
+                        <pagination :data="users" @pagination-change-page="getResults"></pagination>
+                    </div>
                 </div>
             </div>
+        </div>
+
+        <div v-if="!$gate.isAdminOrAuthor()">
+            <not-found></not-found>
         </div>
 
         <!-- Modal -->
@@ -58,34 +65,37 @@
                 </div>
                 <form @submit.prevent="editmode ? updateUser() : createUser()">
                 <div class="modal-body">
+
                     <div class="form-group">
                     <input v-model="form.name" type="text" name="name"
                         placeholder="Name"
                         class="form-control" :class="{ 'is-invalid': form.errors.has('name') }">
                     <has-error :form="form" field="name"></has-error>
                     </div>
+
                     <div class="form-group">
                     <input v-model="form.email" type="email" name="email" id="email"
                         placeholder="Email Address"
                         class="form-control" :class="{ 'is-invalid': form.errors.has('email') }">
                     <has-error :form="form" field="email"></has-error>
                     </div>
+
                     <div class="form-group">
                     <textarea v-model="form.bio" id="bio" name="bio"
                         placeholder="Short bio for user (Optional)"
                         class="form-control" :class="{ 'is-invalid': form.errors.has('bio') }"></textarea>
                     <has-error :form="form" field="bio"></has-error>
                     </div>
+                    <!-- <div v-for="option in options.data" :key="option.id">{{option.name}}</div> -->
                     <div class="form-group">
                     <select name="type" id="type" v-model="form.type" class="form-control" 
                         :class="{ 'is-invalid': form.errors.has('type') }">
-                        <option value="">Select User Role</option>
-                        <option value="admin">Admin</option>
-                        <option value="user">Standard User</option>
-                        <option value="author">Author</option>
+                            <option value="">Select User Role</option>
+                            <option v-for="option in options.data" :key="option.id" v-bind:value="option.name">{{option.label}}</option>
                     </select>
                     <has-error :form="form" field="type"></has-error>
                     </div>
+                    
                     <div class="form-group">
                     <input v-model="form.password" type="password" name="password" id="password"
                         placeholder="Password"
@@ -115,6 +125,10 @@ import { setInterval } from 'timers';
     export default {
         data () {
         return {
+            options:{},
+            OpenIndicator: {
+                render: createElement => createElement('span', {class: {'toggle': true}}),
+            },
             editmode: false,
             users: {},
             form: new Form({
@@ -125,10 +139,16 @@ import { setInterval } from 'timers';
                 type:'',
                 bio:'',
                 photo:''
-            })
+            }),
             }
         },
         methods:{
+            getResults(page = 1) {
+			axios.get('api/user?page=' + page)
+				.then(response => {
+					this.users = response.data;
+				});
+		    },
             updateUser(){
                 this.$Progress.start();
 
@@ -167,7 +187,9 @@ import { setInterval } from 'timers';
                 $('#addNew').modal('show');
             },
             loadUser(){
-                axios.get('api/user').then(({ data }) => (this.users = data.data));
+                if(this.$gate.isAdminOrAuthor()){
+                    axios.get('api/user').then(({ data }) => (this.users = data));
+                }
             },
             createUser(){
                 this.$Progress.start();
@@ -219,6 +241,17 @@ import { setInterval } from 'timers';
             }
         },
         created() {
+            Fire.$on('searching',() => {
+                let query = this.$parent.search;
+                axios.get('api/findUser?q=' + query)
+                .then( (data) => {
+                    this.users = data.data;
+                })
+                .catch( () => {
+
+                })
+            });
+
             this.loadUser();
 
             Fire.$on('LoadUser',() => {
@@ -227,6 +260,13 @@ import { setInterval } from 'timers';
 
             /** running loadUser every 3 second */
             // setInterval(() => this.loadUser(),3000);
+
+            //set options data from database
+            axios.get('api/roles')
+                .then((data) => {
+                    this.options = data
+            })
+            
         }
     }
 </script>
